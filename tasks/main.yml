@@ -1,0 +1,23 @@
+---
+- name: Waiting for ssh connection
+  wait_for_connection:
+    delay: 10
+    timeout: 600
+- name: Install python for ansible
+  raw: "which python &>/dev/null || apt-get -y install python"
+  changed_when: false
+- name: Install sudo package
+  raw: which sudo &>/dev/null || apt-get -y install sudo
+  changed_when: false
+- name: Create service user for ansible
+  raw: "id -u ansible || useradd ansible"
+  changed_when: false
+- name: Add ansible ssh public key
+  raw: "true && mkdir -p /home/ansible/.ssh && echo \"{{ ansible_public_key }}\" > /home/ansible/.ssh/authorized_keys"
+  changed_when: false
+- name: Set permissions for ansible
+  raw: "true && chmod 700 /home/ansible/.ssh && chmod 400 /home/ansible/.ssh/authorized_keys && chown ansible:ansible -R /home/ansible"
+  changed_when: false
+- name: Allow sudo for ansible
+  raw: "grep ansible /etc/sudoers &>/dev/null || sed -i '/root\tALL/a ansible\tALL=(ALL) NOPASSWD:ALL' /etc/sudoers"
+  changed_when: false

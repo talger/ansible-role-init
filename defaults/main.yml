@@ -1,0 +1,3 @@
+---
+ansible_public_key: ""
+ssh_port: 22
